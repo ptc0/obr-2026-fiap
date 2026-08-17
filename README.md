@@ -1,5 +1,8 @@
+<!-- Adicionar nome e explicação. -->
 
-## Sistema de funçoes
+## Descrição de funcionamento
+
+### Sistema de funçoes
 Funções primárias responsáveis pelo funcionamento e movimentação do robô.
 
 
@@ -14,7 +17,8 @@ Funções primárias responsáveis pelo funcionamento e movimentação do robô.
 | acelaracao_por_angulo() | acelera o robo com base no angulo dos censores | ``` velocidade_desejada ```| ```velocidade``` 
 
 
-## Sensores e botões
+
+### Sensores e botões
 
 | Nome | Descrição
 |:---| ---:|
