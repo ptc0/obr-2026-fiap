@@ -14,16 +14,16 @@ async Task andar_frente(double velocidade = 100) {
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(velocidade), velocidade); //  velocidade de rotação e torque
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade), velocidade); // velocidade de rotação e torque
 }
-async Task virar_esquerda(double velocidade = 200, double tick = 0.9) {
-    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(1000, -410);
+async Task virar_esquerda(double velocidade = 200, double tick = 1) {
+    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(1000, -700);
     // Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = true; // Trava o motor da esquerda
     Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false; // Destrava o motor da direita
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2); //*
     await Time.Delay(tick);
 }
         //---------mesclar o virar_direita e o virar_esquerda ele deve receber o parametro se é direita ou esquerda-------------------------
-async Task virar_direita(double velocidade = 200, double tick = 0.9) {
-    Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(1000, -410);
+async Task virar_direita(double velocidade = 200, double tick = 1) {
+    Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(1000, -700);
     // Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = true; // Trava o motor da direita
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false; // Destrava o motor da esquerda
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2);
@@ -70,7 +70,7 @@ async Task Main() {
         ) {
             await travar_motor();
         } else {
-            await andar_frente(100); //se não parar andar pra frente
+            await andar_frente(200); //se não parar andar pra frente
         }
     }
 }

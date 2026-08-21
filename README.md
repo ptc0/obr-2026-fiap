@@ -29,3 +29,16 @@ Funções primárias responsáveis pelo funcionamento e movimentação do robô.
 | **suef** | Sensor Ultrasônico Esquerda Frontal
 | **suf**  | Sensor Ultrasônico Frontal
 | **sub**  | Sensor Ultrasônico Inferior 
+
+
+
+### Nomenclatura de variaveis
+
+| Nome | Descrição | Tipo
+|:---| --- | --- |
+| **dbg** | Modo debug | ```boolean``` |
+| **vel_padrao** | Velodidade dos motores para frente | ```double``` 
+| **vel_padrao_curva** | Velocidade dos motores do lado de fora da curva | ```double``` 
+| **vel_padrao_curva2** | Velocidade dos motores do lado de dentro da curva | ```double```
+| **delay_exec** | Delay entre cada execução | ```double```
+| **tick** | Tempo que a função de curva fica ativa, em ms | ```double```
