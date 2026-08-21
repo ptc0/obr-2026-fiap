@@ -1,4 +1,5 @@
-// variaveis e referencias dos sensores
+// Referências Sensores
+
 string motor_esquerda_ref = "me";
 string motor_direita_ref = "md";
 string sensor_cor_esquerda_ref = "sce";
@@ -25,8 +26,6 @@ string preto = "Preto";
 string branco = "Branco";
 string vermelho = "Vermelho";
 string verde = "Verde";
-
-// main functions
 
 // Movimentos
 async Task andar_frente(double velocidade = 100)
@@ -60,14 +59,12 @@ async Task volta(double velocidade = 100)
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(0 - velocidade), 0 - velocidade); // 
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(0 - velocidade), 0 - velocidade); // 
 }
-
 async Task travar_motor()
 { // 
     Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = true; // Trava o motor da direita
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = true; // Trava o motor da esquerda
 }
 
-// main task
 async Task Main()
 {
     IO.OpenConsole();
