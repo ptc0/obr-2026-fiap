@@ -19,15 +19,15 @@ double vel_padrao_curva2 = -700;
 // só vamos aceitar...
 
 // Inglês
-const string preto = "Black";
+/* const string preto = "Black";
 const string branco = "White";
 const string vermelho = "Red";
-const string verde = "Green";
+const string verde = "Green"; */
 
-/* const string preto = "Preto";
+const string preto = "Preto";
 const string branco = "Branco";
 const string vermelho = "Vermelho";
-const string verde = "Verde"; */
+const string verde = "Verde";
 
 // Movimentos
 async Task andar_frente(double velocidade = 100) {
