@@ -9,9 +9,11 @@ string sensor_cor_direita_ref = "scd";
 
 // Parametros
 
-double delay_exec = .1;
-bool dbg = false;
+bool dbg = true; // modo de debug
+double delay_exec = .2;
 double vel_padrao = 200;
+double vel_padrao_curva = 1000;
+double vel_padrao_curva2 = -700;
 
 // o sBotics se tiver em outra língua, os sensores vão reportar outra cor.. por algum motivo
 // só vamos aceitar...
@@ -35,16 +37,14 @@ async Task andar_frente(double velocidade = 100) {
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade), velocidade); // velocidade de rotação e torque
 }
 async Task virar_esquerda(double velocidade = 200, double tick = 0.9) {
-    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(1000, -410);
-    // Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = true; // Trava o motor da esquerda
+    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(900, vel_padrao_curva2);
     Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false; // Destrava o motor da direita
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2); //*
     await Time.Delay(tick);
 }
 // Mesclar o virar_direita e o virar_esquerda ele deve receber o parametro se é direita ou esquerda
 async Task virar_direita(double velocidade = 200, double tick = 0.9) {
-    Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(1000, -410);
-    // Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = true; // Trava o motor da direita
+    Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(900, vel_padrao_curva2);
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false; // Destrava o motor da esquerda
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2);
     await Time.Delay(tick);
@@ -81,7 +81,7 @@ async Task Main()
         )
         {
             if (dbg) IO.PrintLine("Direita");
-            await virar_direita(1000, .9);
+            await virar_direita(vel_padrao_curva, .9);
 
         }
         else if (
@@ -90,7 +90,7 @@ async Task Main()
         )
         {
             if (dbg) IO.PrintLine("Esquerda");
-            await virar_esquerda(1000, .9);
+            await virar_esquerda(vel_padrao_curva, .9);
         }
         else if (
             (info_sensor_cor_direita == preto) && //detecta se está tudo bem seguir em frente
