@@ -2,10 +2,10 @@
 string motor_esquerda_ref = "me";
 string motor_direita_ref = "md";
 string sensor_cor_esquerda_ref = "sce";
-string sensor_cor_esquerda_tras_ref = "scet";
+string sensor_cor_esquerda_lado_ref = "scel";
 string sensor_cor_meio_ref = "scm";
 string sensor_cor_direita_ref = "scd";
-string sensor_cor_direita_tras_ref = "scdt";
+string sensor_cor_direita_lado_ref = "scdl";
 
 
 // main functions
@@ -102,16 +102,16 @@ async Task Main()
             await andar_frente();
         }
         else if (
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_tras_ref).Analog).ToString() == "Preto") && //detectar se nececita de virar a esquerda
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_tras_ref).Analog).ToString() != "Preto")
+            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_lado_ref).Analog).ToString() == "Preto") && //detectar se nececita de virar a esquerda
+            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_lado_ref).Analog).ToString() != "Preto")
         )
         {
             IO.PrintLine("Esquerda");
             await virar_2(1000, 1000, "E");
         }
         else if (
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_tras_ref).Analog).ToString() != "Preto") && //detectar se nececita de virar a direita
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_tras_ref).Analog).ToString() == "Preto")
+            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_lado_ref).Analog).ToString() != "Preto") && //detectar se nececita de virar a direita
+            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_lado_ref).Analog).ToString() == "Preto")
         )
         {
             IO.PrintLine("Direita");
