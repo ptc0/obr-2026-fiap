@@ -19,45 +19,41 @@ double vel_padrao_curva2 = -700;
 // só vamos aceitar...
 
 // Inglês
-//string preto = "Black";
-//string branco = "White";
-//string vermelho = "Red";
-//string verde = "Green";
+/* const string preto = "Black";
+const string branco = "White";
+const string vermelho = "Red";
+const string verde = "Green"; */
 
-string preto = "Preto";
-string branco = "Branco";
-string vermelho = "Vermelho";
-string verde = "Verde";
+const string preto = "Preto";
+const string branco = "Branco";
+const string vermelho = "Vermelho";
+const string verde = "Verde";
 
 // Movimentos
-async Task andar_frente(double velocidade = 100)
-{
+async Task andar_frente(double velocidade = 100) {
     Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false; // Destrava o motor da direita
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false; // Destrava o motor da esquerda
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(velocidade), velocidade); //  velocidade de rotação e torque
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade), velocidade); // velocidade de rotação e torque
 }
-async Task virar_esquerda(double velocidade = 200, double tick = 0.8)
-{
+async Task virar_esquerda(double velocidade = 200, double tick = 0.9) {
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(900, vel_padrao_curva2);
     Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false; // Destrava o motor da direita
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2); //*
     await Time.Delay(tick);
 }
 // Mesclar o virar_direita e o virar_esquerda ele deve receber o parametro se é direita ou esquerda
-async Task virar_direita(double velocidade = 200, double tick = 0.8)
-{
+async Task virar_direita(double velocidade = 200, double tick = 0.9) {
     Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(900, vel_padrao_curva2);
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false; // Destrava o motor da esquerda
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2);
     await Time.Delay(tick);
 }
-async Task volta(double velocidade = 100)
-{ // ele deveria virar 180°
-    Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false; // Destrava o motor da direita
-    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false; // Destrava o motor da esquerda
-    Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(0 - velocidade), 0 - velocidade); // 
-    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(0 - velocidade), 0 - velocidade); // 
+async Task volta(double velocidade = 100) {
+    Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false;
+    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false;
+    Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(0 - velocidade), 0 - velocidade);
+    Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(0 - velocidade), 0 - velocidade);
 }
 async Task travar_motor()
 { // 
@@ -73,37 +69,40 @@ async Task Main()
     {
         await Time.Delay(delay_exec);
 
+        string info_sensor_cor_esquerda = (Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString();
+        string info_sensor_cor_direita = (Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString();
+
         // informações de leitura dos sensores de cor (para debugging)
         if (dbg) IO.PrintLine($"{sensor_cor_esquerda_ref}: {(Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString()} :: {sensor_cor_direita_ref}: {(Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString()}");
 
         if (
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString() == preto) && //detectar se nececita de virar a esquerda
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString() != preto)
+            (info_sensor_cor_direita == preto) && //detectar se nececita de virar a esquerda
+            (info_sensor_cor_esquerda != preto)
         )
         {
             if (dbg) IO.PrintLine("Direita");
-            await virar_direita(vel_padrao_curva);
+            await virar_direita(vel_padrao_curva, .9);
 
         }
         else if (
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString() != preto) && //detectar se nececita de virar a direita
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString() == preto)
+            (info_sensor_cor_direita != preto) && //detectar se nececita de virar a direita
+            (info_sensor_cor_esquerda == preto)
         )
         {
             if (dbg) IO.PrintLine("Esquerda");
-            await virar_esquerda(vel_padrao_curva);
+            await virar_esquerda(vel_padrao_curva, .9);
         }
         else if (
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString() == preto) && //detecta se está tudo bem seguir em frente
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString() == preto)
+            (info_sensor_cor_direita == preto) && //detecta se está tudo bem seguir em frente
+            (info_sensor_cor_esquerda == preto)
         )
         {
             if (dbg) IO.PrintLine("Frente");
             await andar_frente(vel_padrao);
         }
         else if (
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString() == vermelho) || //parar na linha de chegada
-            ((Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString() == vermelho)
+            (info_sensor_cor_direita == vermelho) || //parar na linha de chegada
+            (info_sensor_cor_esquerda == vermelho)
         )
         {
             if (dbg) IO.PrintLine("Travar");
