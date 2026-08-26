@@ -3,13 +3,15 @@
 string motor_esquerda_ref = "me";
 string motor_direita_ref = "md";
 string sensor_cor_esquerda_ref = "sce";
-//string sensor_cor_meio_ref = "scm"; // TODO: Implementar sensor cor meio
+string sensor_cor_esquerda_lado_ref = "scel";
+string sensor_cor_meio_ref = "scm";
 string sensor_cor_direita_ref = "scd";
+string sensor_cor_direita_lado_ref = "scdl";
 
 
 // Parametros
 
-bool dbg = true; // modo de debug
+bool dbg = false; // modo de debug
 double delay_exec = .2;
 double vel_padrao = 200;
 double vel_padrao_curva = 1000;
@@ -19,15 +21,15 @@ double vel_padrao_curva2 = -700;
 // só vamos aceitar...
 
 // Inglês
-/* const string preto = "Black";
+const string preto = "Black";
 const string branco = "White";
 const string vermelho = "Red";
-const string verde = "Green"; */
+const string verde = "Green";
 
-const string preto = "Preto";
+/* const string preto = "Preto";
 const string branco = "Branco";
 const string vermelho = "Vermelho";
-const string verde = "Verde";
+const string verde = "Verde"; */
 
 // Movimentos
 async Task andar_frente(double velocidade = 100) {
@@ -49,6 +51,7 @@ async Task virar_direita(double velocidade = 200, double tick = 0.9) {
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2);
     await Time.Delay(tick);
 }
+
 async Task volta(double velocidade = 100) {
     Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false;
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false;
@@ -61,47 +64,82 @@ async Task travar_motor()
     Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = true; // Trava o motor da esquerda
 }
 
+async Task virar_2(double velocidade = 200, double tick = 1, string lado = "D")
+{
+    if (lado.ToString() == "E")
+    {
+        if (dbg) IO.PrintLine("Esquerda");
+        Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(1000, -00);
+        Bot.GetComponent<Servomotor>(motor_esquerda_ref).Locked = false; // Destrava o motor da esquerda
+        Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2);
+        await Time.Delay(tick);
+    }
+    if (lado.ToString() == "D")
+    {
+        if (dbg) IO.PrintLine("Direita");
+        Bot.GetComponent<Servomotor>(motor_esquerda_ref).Apply(1000, -700);
+        Bot.GetComponent<Servomotor>(motor_direita_ref).Locked = false; // Destrava o motor da direita
+        Bot.GetComponent<Servomotor>(motor_direita_ref).Apply(Math.Abs(velocidade * 2), velocidade * 2); //*
+        await Time.Delay(tick);
+    }
+}
+
 async Task Main()
 {
-    IO.OpenConsole();
-
+    if (dbg) IO.OpenConsole();
     while (true)
     {
         await Time.Delay(delay_exec);
 
-        string info_sensor_cor_esquerda = (Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString();
-        string info_sensor_cor_direita = (Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString();
+        string info_sensor_cor_esquerda = Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog.ToString();
+        string info_sensor_cor_direita = Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog.ToString();
+        string info_sensor_cor_esquerda_lado = Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_lado_ref).Analog.ToString();
+        string info_sensor_cor_direita_lado = Bot.GetComponent<ColorSensor>(sensor_cor_direita_lado_ref).Analog.ToString();
 
-        // informações de leitura dos sensores de cor (para debugging)
-        if (dbg) IO.PrintLine($"{sensor_cor_esquerda_ref}: {(Bot.GetComponent<ColorSensor>(sensor_cor_esquerda_ref).Analog).ToString()} :: {sensor_cor_direita_ref}: {(Bot.GetComponent<ColorSensor>(sensor_cor_direita_ref).Analog).ToString()}");
+        if (dbg) IO.PrintLine($"{sensor_cor_esquerda_ref}: {info_sensor_cor_esquerda} :: {sensor_cor_direita_ref}: {info_sensor_cor_direita} :: {sensor_cor_esquerda_lado_ref}: {info_sensor_cor_esquerda_lado} :: {sensor_cor_direita_lado_ref}: {info_sensor_cor_direita_lado}");
 
         if (
-            (info_sensor_cor_direita == preto) && //detectar se nececita de virar a esquerda
+            (info_sensor_cor_direita == preto) &&
             (info_sensor_cor_esquerda != preto)
         )
         {
-            if (dbg) IO.PrintLine("Direita");
-            await virar_direita(vel_padrao_curva, .9);
-
+            if (dbg) IO.PrintLine("Virar Direita");
+            await virar_direita(1000);
         }
         else if (
-            (info_sensor_cor_direita != preto) && //detectar se nececita de virar a direita
+            (info_sensor_cor_direita != preto) &&
             (info_sensor_cor_esquerda == preto)
         )
         {
-            if (dbg) IO.PrintLine("Esquerda");
-            await virar_esquerda(vel_padrao_curva, .9);
+            if (dbg) IO.PrintLine("Virar Esquerda");
+            await virar_esquerda(1000);
         }
         else if (
-            (info_sensor_cor_direita == preto) && //detecta se está tudo bem seguir em frente
+            (info_sensor_cor_direita == preto) &&
             (info_sensor_cor_esquerda == preto)
         )
         {
             if (dbg) IO.PrintLine("Frente");
-            await andar_frente(vel_padrao);
+            await andar_frente();
         }
         else if (
-            (info_sensor_cor_direita == vermelho) || //parar na linha de chegada
+            (info_sensor_cor_direita_lado == preto) &&
+            (info_sensor_cor_esquerda_lado != preto)
+        )
+        {
+            if (dbg) IO.PrintLine("Virar Esquerda 2");
+            await virar_2(1000, 1000, "E");
+        }
+        else if (
+            (info_sensor_cor_direita_lado != preto) &&
+            (info_sensor_cor_esquerda_lado == preto)
+        )
+        {
+            if (dbg) IO.PrintLine("Virar Direita 2");
+            await virar_2(1000, 1000, "D");
+        }
+        else if (
+            (info_sensor_cor_direita == vermelho) ||
             (info_sensor_cor_esquerda == vermelho)
         )
         {
@@ -111,7 +149,7 @@ async Task Main()
         else
         {
             if (dbg) IO.PrintLine("Frente");
-            await andar_frente(vel_padrao); //se não parar andar pra frente
+            await andar_frente(200);
         }
     }
 }
